@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Online Card Games</h1>
+      <h1>Card Games</h1>
       <button onClick={() => newMemoryGame(12)}>Memory Game (12 Cards)</button>
       <button onClick={() => newMemoryGame(20)}>Memory Game (20 Cards)</button>
       <button onClick={() => newMemoryGame(40)}>Memory Game (40 Cards)</button>

@@ -1,6 +1,6 @@
-# online-card-games
+# Card-games
 
-Online Card Games
+Card Games
 
 ## Memory Game
 
