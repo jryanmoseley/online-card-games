@@ -13,7 +13,7 @@ export default function MemoryCard({ card, handleChoice, flipped, disabled }) {
         <img className="front" src={card.src} alt="card front"></img>
         <img
           className="back"
-          src="/img/epl.png"
+          src="/cards/img/epl.png"
           onClick={handleClick}
           alt="card back"
         ></img>
