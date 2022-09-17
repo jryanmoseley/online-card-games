@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./MemoryGame.css";
 import MemoryCard from "./MemoryCard";
+import Confetti from "react-confetti";
 
 const cardImages = [
   { src: "/cards/img/arsenal.png", matched: false },
@@ -31,6 +32,7 @@ export default function MemoryGame({ totalNumberOfCards }) {
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
+  const [winner, setWinner] = useState(false);
 
   const getCardGridClassName = () => {
     switch (totalNumberOfCards) {
@@ -58,6 +60,7 @@ export default function MemoryGame({ totalNumberOfCards }) {
 
     setCards(shuffledCards);
     setTurns(0);
+    setWinner(false);
   };
 
   // handle a choice
@@ -98,8 +101,18 @@ export default function MemoryGame({ totalNumberOfCards }) {
     newMemoryGame(totalNumberOfCards);
   }, [totalNumberOfCards]);
 
+  useEffect(() => {
+    if (cards.length > 0) {
+      if (cards.every((card) => card.matched === true)) {
+        setWinner(true);
+      }
+    }
+  }, [cards]);
+
   return (
     <div>
+      {winner ? <Confetti /> : null}
+
       <p>Turns: {turns}</p>
       <div className={getCardGridClassName()}>
         {cards.map((card) => (
