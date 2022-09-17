@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import MemoryCard from "./components/MemoryCard";
 
 const cardImages = [
   { src: "img/arsenal.png" },
@@ -47,6 +48,12 @@ function App() {
     <div className="App">
       <h1>Online Card Games</h1>
       <button onClick={() => newMemoryGame(6)}>New Memory Game</button>
+
+      <div className="card-grid">
+        {cards.map((card) => (
+          <MemoryCard key={card.id} card={card} />
+        ))}
+      </div>
     </div>
   );
 }
