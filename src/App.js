@@ -1,33 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import MemoryCard from "./components/MemoryCard";
 
 const cardImages = [
-  { src: "img/arsenal.png" },
-  { src: "img/aston_villa.png" },
-  { src: "img/bournemouth.png" },
-  { src: "img/chelsea.png" },
-  { src: "img/crystal_palace.png" },
-  { src: "img/everton.png" },
-  { src: "img/leicester_city.png" },
-  { src: "img/liverpool.png" },
-  { src: "img/manchester_city.png" },
-  { src: "img/manchester_united.png" },
-  { src: "img/newcastle_united.png" },
-  { src: "img/norwich_city.png" },
-  { src: "img/southampton.png" },
-  { src: "img/stoke_city.png" },
-  { src: "img/sunderland.png" },
-  { src: "img/swansea_city.png" },
-  { src: "img/tottenham_hotspur.png" },
-  { src: "img/watford.png" },
-  { src: "img/westbrom.png" },
-  { src: "img/westham.png" },
+  { src: "img/arsenal.png", matched: false },
+  { src: "img/aston_villa.png", matched: false },
+  { src: "img/bournemouth.png", matched: false },
+  { src: "img/chelsea.png", matched: false },
+  { src: "img/crystal_palace.png", matched: false },
+  { src: "img/everton.png", matched: false },
+  { src: "img/leicester_city.png", matched: false },
+  { src: "img/liverpool.png", matched: false },
+  { src: "img/manchester_city.png", matched: false },
+  { src: "img/manchester_united.png", matched: false },
+  { src: "img/newcastle_united.png", matched: false },
+  { src: "img/norwich_city.png", matched: false },
+  { src: "img/southampton.png", matched: false },
+  { src: "img/stoke_city.png", matched: false },
+  { src: "img/sunderland.png", matched: false },
+  { src: "img/swansea_city.png", matched: false },
+  { src: "img/tottenham_hotspur.png", matched: false },
+  { src: "img/watford.png", matched: false },
+  { src: "img/westbrom.png", matched: false },
+  { src: "img/westham.png", matched: false },
 ];
 
 function App() {
   const [cards, setCards] = useState([]);
   const [turns, setTurns] = useState(0);
+  const [choiceOne, setChoiceOne] = useState(null);
+  const [choiceTwo, setChoiceTwo] = useState(null);
 
   const newMemoryGame = (numberOfCards) => {
     const cardImagesSubset = [...cardImages]
@@ -42,7 +44,38 @@ function App() {
     setTurns(0);
   };
 
-  console.log(cards, turns);
+  // handle a choice
+  const handleChoice = (card) => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+  };
+
+  // compare the two cards
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      if (choiceOne.src === choiceTwo.src) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.src === choiceOne.src) {
+              return { ...card, matched: true };
+            } else {
+              return card;
+            }
+          });
+        });
+
+        resetTurn();
+      } else {
+        resetTurn();
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+
+  // reset choices and increase turns
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns((prevTurns) => prevTurns + 1);
+  };
 
   return (
     <div className="App">
@@ -51,7 +84,7 @@ function App() {
 
       <div className="card-grid">
         {cards.map((card) => (
-          <MemoryCard key={card.id} card={card} />
+          <MemoryCard key={card.id} card={card} handleChoice={handleChoice} />
         ))}
       </div>
     </div>
