@@ -37,7 +37,7 @@ const Memory = () => {
 
   useEffect(() => {
     newMemoryGame();
-  }, [gameType]);
+  }, []);
 
   return (
     <div>

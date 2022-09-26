@@ -5,7 +5,7 @@ describe("Castle single player card game", () => {
 
   context("single player castle game against one ai", () => {
     beforeEach(() => {
-      cy.get("#btnCastleGameSinglePlayer").click();
+      cy.get("#btnCastleSinglePlayerOneAI").click();
     });
 
     it("should deal three face down cards to each player, six cards into each players hands and thirty four cards into the draw pile", () => {

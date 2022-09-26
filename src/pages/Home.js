@@ -13,6 +13,11 @@ const Home = () => {
       <Link to="/cards/memory/forty-card-game">
         <button id="btnMemoryGameForty">Memory Game (40 Cards)</button>
       </Link>
+      <Link to="/cards/castle/single-player/one-ai">
+        <button id="btnCastleSinglePlayerOneAI">
+          Castle Single Player (1 AI)
+        </button>
+      </Link>
     </div>
   );
 };
