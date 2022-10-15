@@ -1,0 +1,12 @@
+.castle-card {
+  position: relative;
+}
+
+.castle-card img {
+  max-height: 100px;
+  cursor: pointer;
+  display: block;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  /* background-color: #fff; */
+}
