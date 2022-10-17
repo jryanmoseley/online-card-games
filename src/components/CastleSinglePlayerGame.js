@@ -59,6 +59,7 @@ const deck = [
 
 export default function CastleSinglePlayerGame({ numberOfAI }) {
   const [cards, setCards] = useState([]);
+  const [playerReady, setPlayerReady] = useState(false);
   const [drawPile, setDrawPile] = useState([]);
   const [discardPile, setDiscardPile] = useState([]);
   const [playerFaceDownCards, setPlayerFaceDownCards] = useState([]);
@@ -67,6 +68,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
   const [aiOneFaceDownCards, setAIOneFaceDownCards] = useState([]);
   const [aiOneFaceUpCards, setAIOneFaceUpCards] = useState([]);
   const [aiOneHand, setAIOneHand] = useState([]);
+  const [playerHandSelectedCards, selectPlayerSelectedCards] = useState([]);
 
   const newGame = (numberOfAI) => {
     const shuffledCards = [...deck]
@@ -79,7 +81,10 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
     setPlayerHand(shuffledCards.splice(0, 6));
     setAIOneHand(shuffledCards.splice(0, 6));
     setDrawPile(shuffledCards);
+    setPlayerReady(false);
   };
+
+  const handlePlayerHandCardClick = () => {};
 
   useEffect(() => {
     newGame(numberOfAI);
@@ -95,7 +100,15 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
 
   return (
     <div>
-      <h2>AI Player</h2>
+      <h2>
+        <a
+          href="https://en.m.wikipedia.org/wiki/Castle_(card_game)"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Game Instructions
+        </a>
+      </h2>
       <div className="game-board-one-ai-grid">
         <div></div>
         <div className="player-two hand">
@@ -179,7 +192,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               card={card}
               handleChoice={null}
               flipped={true}
-              disabled={true}
+              disabled={false}
             />
           ))}
         </div>
