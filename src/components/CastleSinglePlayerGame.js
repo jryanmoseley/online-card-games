@@ -57,34 +57,132 @@ const deck = [
   { src: "/cards/img/playing_cards/ace_spade.png", value: 14 },
 ];
 
+const gameStateEnum = {
+  NewGame: "new_game",
+  PlayerTurn: "player_turn",
+  AITurn: "ai_turn",
+};
+
 export default function CastleSinglePlayerGame({ numberOfAI }) {
-  const [cards, setCards] = useState([]);
-  const [playerReady, setPlayerReady] = useState(false);
+  const [gameState, setGameState] = useState(gameStateEnum.NewGame);
   const [drawPile, setDrawPile] = useState([]);
   const [discardPile, setDiscardPile] = useState([]);
+  const [boardPile, setBoardPile] = useState([]);
   const [playerFaceDownCards, setPlayerFaceDownCards] = useState([]);
   const [playerFaceUpCards, setPlayerFaceUpCards] = useState([]);
   const [playerHand, setPlayerHand] = useState([]);
   const [aiOneFaceDownCards, setAIOneFaceDownCards] = useState([]);
   const [aiOneFaceUpCards, setAIOneFaceUpCards] = useState([]);
   const [aiOneHand, setAIOneHand] = useState([]);
-  const [playerHandSelectedCards, selectPlayerSelectedCards] = useState([]);
 
   const newGame = (numberOfAI) => {
     const shuffledCards = [...deck]
       .sort(() => Math.random() - 0.5)
       .map((card) => ({ ...card, id: Math.random() }));
-    setCards(shuffledCards);
 
     setPlayerFaceDownCards(shuffledCards.splice(0, 3));
     setAIOneFaceDownCards(shuffledCards.splice(0, 3));
     setPlayerHand(shuffledCards.splice(0, 6));
     setAIOneHand(shuffledCards.splice(0, 6));
     setDrawPile(shuffledCards);
-    setPlayerReady(false);
+    setGameState(gameStateEnum.NewGame);
   };
 
-  const handlePlayerHandCardClick = () => {};
+  const playerPlay = () => {
+    const selectedCards = playerHand.filter((c) => c.selected === true);
+    if (gameState === gameStateEnum.NewGame && selectedCards.length === 3) {
+      // add selected cards to player face up cards
+      setPlayerFaceUpCards(
+        selectedCards.map((card) => {
+          return { ...card, selected: false };
+        })
+      );
+
+      // remove selected cards from player's hand
+      const newPlayerHand = playerHand.filter(
+        (h) => !selectedCards.some((s) => h.src === s.src)
+      );
+      setPlayerHand(newPlayerHand);
+
+      // select ai face up cards
+      const aiCards = aiOneHand;
+      setAIOneFaceUpCards(aiCards.splice(0, 3));
+      setAIOneHand(aiCards);
+
+      setGameState(gameStateEnum.PlayerTurn);
+    }
+
+    if (gameState === gameStateEnum.PlayerTurn) {
+      setGameState(gameStateEnum.AITurn);
+
+      const draw = drawPile;
+      const board = [
+        ...boardPile,
+        selectedCards.map((card) => {
+          return { ...card, selected: false };
+        }),
+      ];
+      // add selected cards to player face up cards
+      setBoardPile(board);
+
+      // remove selected cards from player's hand and add cards from the draw pile
+      const newPlayerHand = playerHand.filter(
+        (h) => !selectedCards.some((s) => h.src === s.src)
+      );
+      const hand = [...newPlayerHand, draw.splice(0, selectedCards.length)];
+      setPlayerHand(hand);
+
+      setDrawPile(draw);
+      setGameState(gameStateEnum.PlayerTurn);
+    }
+  };
+
+  const handleChoice = (card) => {
+    const selectedCards = playerHand.filter((c) => c.selected === true);
+    if (gameState === gameStateEnum.NewGame && selectedCards.length <= 3) {
+      setPlayerHand((currentHand) => {
+        return currentHand.map((currentCard) => {
+          if (currentCard.src === card.src) {
+            if (selectedCards.length === 3) {
+              return { ...currentCard, selected: false };
+            } else {
+              return { ...currentCard, selected: !currentCard.selected };
+            }
+          } else {
+            return { ...currentCard };
+          }
+        });
+      });
+    }
+
+    if (gameState === gameStateEnum.PlayerTurn) {
+      setPlayerHand((currentHand) => {
+        return currentHand.map((currentCard) => {
+          if (currentCard.src === card.src) {
+            if (currentCard.selected) {
+              return { ...currentCard, selected: false };
+            }
+
+            if (selectedCards.length === 0) {
+              return { ...currentCard, selected: true };
+            }
+
+            if (selectedCards.every((c) => c.value === currentCard.value)) {
+              return { ...currentCard, selected: true };
+            } else {
+              return { ...currentCard, selected: false };
+            }
+          } else {
+            return { ...currentCard };
+          }
+        });
+      });
+    }
+  };
+
+  // useEffect(() => {
+
+  // }, [playerHandSelectedCards])
 
   useEffect(() => {
     newGame(numberOfAI);
@@ -119,6 +217,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={false}
               disabled={true}
+              selected={card.selected}
             />
           ))}
         </div>
@@ -133,6 +232,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={false}
               disabled={true}
+              selected={card.selected}
             />
           ))}
           {aiOneFaceUpCards.map((card) => (
@@ -142,6 +242,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={true}
               disabled={true}
+              selected={card.selected}
             />
           ))}
         </div>
@@ -157,10 +258,24 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={false}
               disabled={true}
+              selected={false}
             />
           }
         </div>
-        <div>board</div>
+        <div className="board-pile">
+          <p>Board</p>
+          <p className="counter">{boardPile.length}</p>
+          {boardPile.map((card) => (
+            <CastleCard
+              key={card.id}
+              card={card}
+              handleChoice={null}
+              flipped={true}
+              disabled={true}
+              selected={false}
+            />
+          ))}
+        </div>
         <div className="discard-pile">
           <p>Discard Pile</p>
           <p className="counter">{discardPile.length}</p>
@@ -171,6 +286,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={false}
               disabled={true}
+              selected={false}
             />
           }
         </div>
@@ -184,6 +300,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={false}
               disabled={true}
+              selected={card.selected}
             />
           ))}
           {playerFaceUpCards.map((card) => (
@@ -193,6 +310,7 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
               handleChoice={null}
               flipped={true}
               disabled={false}
+              selected={card.selected}
             />
           ))}
         </div>
@@ -204,11 +322,15 @@ export default function CastleSinglePlayerGame({ numberOfAI }) {
             <CastleCard
               key={card.id}
               card={card}
-              handleChoice={null}
+              handleChoice={handleChoice}
               flipped={true}
-              disabled={true}
+              disabled={false}
+              selected={card.selected}
             />
           ))}
+          <button id="btnPlayerPlay" onClick={() => playerPlay()}>
+            Play
+          </button>
         </div>
         <div></div>
       </div>

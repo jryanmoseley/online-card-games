@@ -1,6 +1,12 @@
 import "./CastleCard.css";
 
-export default function CastleCard({ card, handleChoice, flipped, disabled }) {
+export default function CastleCard({
+  card,
+  handleChoice,
+  flipped,
+  disabled,
+  selected,
+}) {
   const handleClick = () => {
     if (!disabled) {
       handleChoice(card);
@@ -15,7 +21,7 @@ export default function CastleCard({ card, handleChoice, flipped, disabled }) {
   };
 
   return (
-    <div className="castle-card">
+    <div className={selected ? "castle-card selected" : "castle-card"}>
       <img src={getSrc()} alt="card" onClick={handleClick}></img>
     </div>
   );
